@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Financial Statements Lab</title>
+  <meta name="description" content="Learn the statements. Connect the numbers. Understand the business.">
+  <style>
+/* Financial Statements Lab — navy, off-white and muted teal. */
+:root {
+  --navy: #0f2540; --navy-soft: #27405f; --paper: #f7f5ef; --white: #fffefb;
+  --teal: #3d7a78; --teal-dark: #2d5f5d; --teal-wash: #e3eeec; --line: #d9d5c8; --ink: #1c2a3b; --muted: #5b6776;
+  --good: #1f6b4a; --bad: #9b2c2c; --bad-wash: #f8e9e6;
+  --serif: Georgia, "Iowan Old Style", "Palatino Linotype", serif;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 1rem/1.6 var(--sans); }
+h1, h2, h3, .brand { font-family: var(--serif); color: var(--navy); line-height: 1.2; font-weight: 700; }
+h1 { font-size: clamp(1.9rem, 4vw, 2.6rem); margin: 0 0 1rem; }
+h2 { font-size: 1.35rem; margin: 2rem 0 .6rem; }
+h3 { font-size: 1.05rem; margin: 1.2rem 0 .3rem; }
+a { color: var(--teal-dark); }
+:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+h1:focus { outline: none; }
+.skip { position: absolute; left: -999px; background: var(--navy); color: #fff; padding: .6rem 1rem; z-index: 10; }
+.skip:focus { left: 0; }
+
+.site-header { background: var(--navy); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 2rem; padding: .9rem clamp(1rem, 4vw, 3rem); }
+.brand { color: #fff; font-size: 1.25rem; text-decoration: none; }
+.site-header ul { list-style: none; display: flex; gap: .25rem; margin: 0; padding: 0; flex-wrap: wrap; }
+.site-header nav a { color: #dce5ee; text-decoration: none; padding: .45rem .9rem; border-radius: 4px; display: inline-block; }
+.site-header nav a:hover { background: var(--navy-soft); color: #fff; }
+.site-header nav a[aria-current="page"] { background: var(--teal); color: #fff; }
+.site-header a:focus-visible { outline-color: #fff; }
+
+main { max-width: 1180px; margin: 0 auto; padding: 2.5rem clamp(1rem, 4vw, 2rem) 3rem; }
+section[hidden] { display: none; }
+.lead { font-family: var(--serif); font-size: 1.15rem; max-width: 65ch; }
+.muted { color: var(--muted); font-size: .9rem; }
+
+.hero { max-width: 760px; padding: 1rem 0 2rem; }
+.hero h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); margin-bottom: .5rem; }
+.tagline { font-family: var(--serif); font-style: italic; font-size: 1.35rem; color: var(--teal-dark); margin: 0 0 1.2rem; }
+.intro { max-width: 62ch; font-size: 1.05rem; }
+.note { background: var(--teal-wash); border-left: 4px solid var(--teal); padding: .8rem 1rem; max-width: 62ch; margin-top: 1.4rem; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.2rem; }
+.card { display: flex; flex-direction: column; gap: .4rem; background: var(--navy); color: #e8eef4; text-decoration: none; padding: 1.6rem; border-radius: 6px; border-top: 5px solid var(--teal); transition: transform .15s; }
+.card:hover { transform: translateY(-3px); }
+.card h2 { color: #fff; margin: 0; }
+.card p { margin: 0; flex: 1; }
+.card span { color: #a9d3cf; font-weight: 600; margin-top: .6rem; }
+.card:focus-visible { outline-color: var(--teal); }
+.sections-guide dl { display: grid; grid-template-columns: max-content 1fr; gap: .5rem 1.5rem; max-width: 760px; }
+.sections-guide dt { font-family: var(--serif); font-weight: 700; }
+.sections-guide dd { margin: 0; }
+
+.tabs { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+.tab { padding: .55rem 1.1rem; border: 1px solid var(--navy); border-radius: 4px; text-decoration: none; color: var(--navy); font-weight: 600; background: var(--white); }
+.tab[aria-current="page"] { background: var(--navy); color: #fff; }
+
+.banner { padding: .8rem 1rem; border-radius: 4px; margin: 0 0 1.2rem; }
+.banner.ok { background: var(--teal-wash); border-left: 4px solid var(--good); }
+.banner.bad { background: var(--bad-wash); border-left: 4px solid var(--bad); color: #5c1a1a; }
+.banner ul { margin: .4rem 0; padding-left: 1.2rem; }
+
+.learn-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr); gap: 1.5rem; align-items: start; }
+.explain { background: var(--white); border: 1px solid var(--line); border-top: 5px solid var(--teal); padding: 1.3rem 1.5rem; position: sticky; top: 1rem; }
+.explain h2 { margin-top: 0; }
+.formula { background: var(--teal-wash); padding: .6rem .8rem; border-radius: 4px; font-family: var(--serif); }
+.formula b { display: block; font: 600 .85rem var(--sans); color: var(--teal-dark); }
+
+.table-wrap { overflow-x: auto; background: var(--white); border: 1px solid var(--line); margin-bottom: 1rem; }
+table.fin { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+.fin caption { text-align: left; padding: 1rem 1rem .6rem; font: 700 1.2rem var(--serif); color: var(--navy); }
+.fin caption span { display: block; font: 400 .88rem var(--sans); color: var(--muted); margin-top: .2rem; }
+.fin th, .fin td { padding: .55rem 1rem; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+.fin thead th { background: var(--navy); color: #fff; font-weight: 600; }
+.fin tbody th { font-weight: 400; }
+.fin .num { text-align: right; white-space: nowrap; }
+.fin .negative { color: var(--bad); }
+.fin tr.total th, .fin tr.total td { font-weight: 700; background: #f0eee6; border-top: 2px solid var(--navy); }
+.fin tr.group th { background: var(--teal-wash); color: var(--teal-dark); font: 700 .95rem var(--serif); }
+.fin .pass, .pass { color: var(--good); font-weight: 700; }
+.fin .fail, .fail { color: var(--bad); font-weight: 700; }
+.checks td:last-child { font-size: .88rem; min-width: 18rem; }
+
+button.item { all: unset; cursor: pointer; color: var(--navy); border-bottom: 1px dotted var(--teal); padding: .1rem 0; }
+button.item:hover { color: var(--teal-dark); border-bottom-style: solid; }
+button.item[aria-pressed="true"] { font-weight: 700; background: var(--teal-wash); padding: .1rem .4rem; border-radius: 3px; }
+button.item:focus-visible { outline: 3px solid var(--teal); outline-offset: 2px; }
+
+.links { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
+.link-card { background: var(--white); border: 1px solid var(--line); border-left: 4px solid var(--teal); padding: 1rem 1.2rem; }
+.link-card h2 { margin: 0 0 .3rem; font-size: 1.1rem; }
+.link-card p { margin: 0; }
+
+.btn { background: var(--navy); color: #fff; border: 0; padding: .7rem 1.4rem; font: 600 1rem var(--sans); border-radius: 4px; cursor: pointer; }
+.btn:hover { background: var(--teal-dark); }
+fieldset { border: 1px solid var(--line); background: var(--white); padding: 1.2rem; margin: 0 0 1rem; max-width: 680px; }
+legend { font: 700 1.15rem var(--serif); color: var(--navy); padding: 0 .4rem; }
+.opt { display: flex; gap: .6rem; padding: .6rem .8rem; margin: .4rem 0; border: 1px solid var(--line); border-radius: 4px; cursor: pointer; }
+.opt.right { background: var(--teal-wash); border-color: var(--good); }
+.opt.wrong { background: var(--bad-wash); border-color: var(--bad); }
+.feedback { max-width: 680px; }
+ul { max-width: 70ch; }
+.site-footer { background: var(--navy); color: #c9d4df; padding: 1.5rem clamp(1rem, 4vw, 3rem); font-size: .9rem; }
+.site-footer p { max-width: 900px; margin: 0 auto; }
+
+@media (max-width: 860px) {
+  .learn-grid { grid-template-columns: 1fr; }
+  .explain { position: static; }
+  .fin th, .fin td { padding: .5rem .6rem; }
+  .sections-guide dl { grid-template-columns: 1fr; gap: .1rem; }
+  .sections-guide dd { margin-bottom: .6rem; }
+}
+
+</style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+  <header class="site-header">
+    <a class="brand" href="#home">Financial Statements Lab</a>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="#learn" data-nav="learn">Learn</a></li>
+        <li><a href="#connect" data-nav="connect">Connect</a></li>
+        <li><a href="#analyse" data-nav="analyse">Analyse</a></li>
+        <li><a href="#practise" data-nav="practise">Practise</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- HOME -->
+    <section id="home" aria-labelledby="home-title">
+      <div class="hero">
+        <h1 id="home-title" tabindex="-1">Financial Statements Lab</h1>
+        <p class="tagline">Learn the statements. Connect the numbers. Understand the business.</p>
+        <p class="intro">Three statements describe almost every business: what it earned, what it owns and owes, and where its cash went. This lab lets you click through each line, see how the numbers connect, and test yourself, using one fictional company over three years.</p>
+        <p class="note"><strong>Please note:</strong> all company data here is fictional and illustrative. It is not taken from any real company.</p>
+      </div>
+      <div class="cards">
+        <a class="card" href="#learn/pl"><h2>Profit and Loss</h2><p>How revenue becomes net profit, step by step.</p><span>Open the P&amp;L</span></a>
+        <a class="card" href="#learn/bs"><h2>Balance Sheet</h2><p>What the company owns, owes and is worth on one date.</p><span>Open the balance sheet</span></a>
+        <a class="card" href="#learn/cf"><h2>Cash Flow</h2><p>Why cash moves differently from profit.</p><span>Open the cash flow</span></a>
+      </div>
+      <div class="sections-guide">
+        <h2>Four ways to work</h2>
+        <dl>
+          <dt><a href="#learn">Learn</a></dt><dd>Click any line item for its meaning, formula, example and why it matters.</dd>
+          <dt><a href="#connect">Connect</a></dt><dd>See how the statements link, with live accounting checks.</dd>
+          <dt><a href="#analyse">Analyse</a></dt><dd>Turn the statements into margins, days and returns.</dd>
+          <dt><a href="#practise">Practise</a></dt><dd>Answer knowledge-check questions and get instant feedback.</dd>
+        </dl>
+      </div>
+    </section>
+
+    <!-- LEARN -->
+    <section id="learn" aria-labelledby="learn-title" hidden>
+      <h1 id="learn-title" tabindex="-1">Learn the statements</h1>
+      <div id="learn-tabs" class="tabs" role="group" aria-label="Choose a statement"></div>
+      <div id="learn-banner"></div>
+      <div class="learn-grid">
+        <div id="learn-table" class="table-wrap"></div>
+        <aside id="explain" class="explain" aria-live="polite" aria-label="Line item explanation"></aside>
+      </div>
+    </section>
+
+    <!-- CONNECT -->
+    <section id="connect" aria-labelledby="connect-title" hidden>
+      <h1 id="connect-title" tabindex="-1">Connect the numbers</h1>
+      <div id="connect-body"></div>
+    </section>
+
+    <!-- ANALYSE -->
+    <section id="analyse" aria-labelledby="analyse-title" hidden>
+      <h1 id="analyse-title" tabindex="-1">Analyse the business</h1>
+      <div id="analyse-body"></div>
+    </section>
+
+    <!-- PRACTISE -->
+    <section id="practise" aria-labelledby="practise-title" hidden>
+      <h1 id="practise-title" tabindex="-1">Practise</h1>
+      <div id="practise-body"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Financial Statements Lab is an educational project. Northfield Goods Ltd is a fictional company; every figure is illustrative and is not real company data. Nothing here is financial advice.</p>
+  </footer>
+
+  <!-- Load order matters: data, then maths, then text content, then the interface. -->
+  <script>
+/* data.js — the fictional dataset. Only INPUT figures live here.
+   Totals, profits and cash flows are calculated in finance.js, so they can never be typed in wrongly. */
+const DATA = {
+  company: "Northfield Goods Ltd (fictional)",
+  units: "$ thousands",
+  periodNote: "Financial years ended 31 December",
+  years: ["FY2022", "FY2023", "FY2024"],
+
+  // Balance sheet at the START of FY2022 (i.e. the end of FY2021). Needed to work out FY2022 movements.
+  opening: {
+    cash: 800, receivables: 1500, inventory: 1800, otherCurrentAssets: 300, ppe: 4000,
+    payables: 1300, borrowings: 3000, otherLiabilities: 400,
+    shareCapital: 2000, retainedEarnings: 1700
+  },
+
+  // Profit and loss inputs (costs entered as positive numbers). One value per year.
+  pl: {
+    revenue:      [12000, 13800, 15600],
+    cogs:         [ 7200,  8280,  9360],
+    opex:         [ 2700,  3000,  3400],
+    da:           [  600,   660,   720],
+    financeCosts: [  240,   260,   280],
+    tax:          [  315,   400,   460]
+  },
+
+  // Balance sheet at the END of each year.
+  bs: {
+    cash:               [1305, 1575, 1985],
+    receivables:        [1700, 1950, 2200],
+    inventory:          [2000, 2250, 2500],
+    otherCurrentAssets: [ 320,  340,  360],
+    ppe:                [4400, 4840, 5320],
+    payables:           [1450, 1650, 1850],
+    borrowings:         [3200, 3000, 2800],
+    otherLiabilities:   [ 430,  460,  490],
+    shareCapital:       [2000, 2000, 2000],
+    retainedEarnings:   [2645, 3845, 5225]
+  },
+
+  // Assumptions under which the cash flow statement is built and validated.
+  assumptions: [
+    "No dividends are paid and no new shares are issued.",
+    "No fixed assets are sold; capital spending equals the rise in property and equipment plus depreciation.",
+    "Tax and interest are paid in cash in the year they are expensed.",
+    "Depreciation and amortisation is the only non-cash expense."
+  ]
+};
+
+</script>
+  <script>
+/* finance.js — pure calculation and validation functions. No page (DOM) code lives here. */
+const TOLERANCE = 0.5; // figures are whole numbers, so anything above 0.5 is a real difference
+
+// ---------- Profit and loss ----------
+function calcGrossProfit(revenue, cogs)  { return revenue - cogs; }
+function calcEbitda(grossProfit, opex)   { return grossProfit - opex; }
+function calcEbit(ebitda, da)            { return ebitda - da; }
+function calcPbt(ebit, financeCosts)    { return ebit - financeCosts; }
+function calcNetProfit(pbt, tax)         { return pbt - tax; }
+
+// ---------- Balance sheet ----------
+function calcTotalAssets(b)      { return b.cash + b.receivables + b.inventory + b.otherCurrentAssets + b.ppe; }
+function calcTotalLiabilities(b) { return b.payables + b.borrowings + b.otherLiabilities; }
+function calcTotalEquity(b)      { return b.shareCapital + b.retainedEarnings; }
+// Operating assets minus operating liabilities (everything except cash, PPE and borrowings)
+function calcWorkingCapital(b) {
+  return (b.receivables + b.inventory + b.otherCurrentAssets) - (b.payables + b.otherLiabilities);
+}
+
+// ---------- Cash flow (indirect method) ----------
+// An INCREASE in working capital ties up cash, so it is subtracted.
+function calcOperatingCashFlow(netProfit, da, workingCapitalIncrease) { return netProfit + da - workingCapitalIncrease; }
+// Capex = rise in PPE + depreciation (assumes no disposals). Cash spent is negative.
+function calcInvestingCashFlow(ppeNow, ppePrev, da) { return -((ppeNow - ppePrev) + da); }
+// Borrowing more or issuing shares brings cash in (assumes no dividends).
+function calcFinancingCashFlow(prev, now) {
+  return (now.borrowings - prev.borrowings) + (now.shareCapital - prev.shareCapital);
+}
+
+// ---------- Ratios ----------
+function ratioPercent(part, whole) { return whole === 0 ? NaN : (part / whole) * 100; }
+function ratioDays(balance, flow)  { return flow === 0 ? NaN : (balance / flow) * 365; }
+
+// ---------- Build all three statements from the raw data ----------
+function buildStatements(data) {
+  const pl = [], bs = [], cf = [];
+  data.years.forEach((year, i) => {
+    const p = {};
+    ["revenue", "cogs", "opex", "da", "financeCosts", "tax"].forEach(k => p[k] = data.pl[k][i]);
+    p.grossProfit = calcGrossProfit(p.revenue, p.cogs);
+    p.ebitda      = calcEbitda(p.grossProfit, p.opex);
+    p.ebit        = calcEbit(p.ebitda, p.da);
+    p.pbt         = calcPbt(p.ebit, p.financeCosts);
+    p.netProfit   = calcNetProfit(p.pbt, p.tax);
+    pl.push(p);
+
+    const b = {};
+    Object.keys(data.bs).forEach(k => b[k] = data.bs[k][i]);
+    b.totalAssets      = calcTotalAssets(b);
+    b.totalLiabilities = calcTotalLiabilities(b);
+    b.totalEquity      = calcTotalEquity(b);
+    b.totalLE          = b.totalLiabilities + b.totalEquity;
+    bs.push(b);
+  });
+
+  data.years.forEach((year, i) => {
+    const prev = i === 0 ? data.opening : bs[i - 1];
+    const wcIncrease = calcWorkingCapital(bs[i]) - calcWorkingCapital(prev);
+    const c = { netProfit: pl[i].netProfit, da: pl[i].da, workingCapital: -wcIncrease };
+    c.operating = calcOperatingCashFlow(c.netProfit, c.da, wcIncrease);
+    c.investing = calcInvestingCashFlow(bs[i].ppe, prev.ppe, pl[i].da);
+    c.financing = calcFinancingCashFlow(prev, bs[i]);
+    c.netChange = c.operating + c.investing + c.financing;
+    c.opening   = i === 0 ? data.opening.cash : cf[i - 1].closing; // chained from last year's calculated closing
+    c.closing   = c.opening + c.netChange;
+    cf.push(c);
+  });
+  return { years: data.years, pl, bs, cf };
+}
+
+// ---------- Validation: reports problems, never changes the figures ----------
+function validateStatements(S, data) {
+  const checks = [];
+  S.years.forEach((year, i) => {
+    const b = S.bs[i], c = S.cf[i], prevRE = i === 0 ? data.opening.retainedEarnings : S.bs[i - 1].retainedEarnings;
+
+    const gap = b.totalAssets - b.totalLE;
+    checks.push({ year, name: "Total assets = total liabilities + equity", ok: Math.abs(gap) < TOLERANCE,
+      detail: `${formatNumber(b.totalAssets)} vs ${formatNumber(b.totalLiabilities)} + ${formatNumber(b.totalEquity)} = ${formatNumber(b.totalLE)} (difference ${formatNumber(gap)})` });
+
+    const cashGap = c.closing - b.cash;
+    checks.push({ year, name: "Opening cash + net cash movement = closing cash on the balance sheet", ok: Math.abs(cashGap) < TOLERANCE,
+      detail: `${formatNumber(c.opening)} + ${formatNumber(c.netChange)} = ${formatNumber(c.closing)} vs balance sheet cash ${formatNumber(b.cash)} (difference ${formatNumber(cashGap)})` });
+
+    const reGap = b.retainedEarnings - (prevRE + S.pl[i].netProfit);
+    checks.push({ year, name: "Retained earnings = last year's retained earnings + net profit (no dividends)", ok: Math.abs(reGap) < TOLERANCE,
+      detail: `${formatNumber(prevRE)} + ${formatNumber(S.pl[i].netProfit)} = ${formatNumber(prevRE + S.pl[i].netProfit)} vs reported ${formatNumber(b.retainedEarnings)} (difference ${formatNumber(reGap)})` });
+  });
+  return checks;
+}
+
+// ---------- Formatting: 1,234 and (1,234) for negatives, as in published accounts ----------
+function formatNumber(n) {
+  if (!Number.isFinite(n)) return "n/a";
+  const s = Math.abs(Math.round(n)).toLocaleString("en-GB");
+  return n < 0 ? `(${s})` : s;
+}
+function formatPercent(n, dp = 1) { return Number.isFinite(n) ? n.toFixed(dp) + "%" : "n/a"; }
+function formatDays(n)            { return Number.isFinite(n) ? n.toFixed(0) + " days" : "n/a"; }
+
+</script>
+  <script>
+/* content.js — teaching text: statement layouts, line-item explanations and quiz questions.
+   Examples are functions of the calculated statements (S), so the numbers quoted always match the tables. */
+
+const k  = n => "$" + formatNumber(n) + "k";                    // 15600 -> "$15,600k"
+const lastOf = (S, st) => S[st][S[st].length - 1];
+const lastYear = S => S.years[S.years.length - 1];
+const prevOf = (S, st) => S[st][S[st].length - 2];
+
+/* Each row: id (links to EXPLAIN), label, key (field in the statement object),
+   kind ("total" is bold), neg (show cost as a negative number). */
+const STATEMENTS = {
+  pl: { title: "Profit and Loss Statement", short: "Profit and Loss",
+    caption: "Performance over each year, in $ thousands (fictional company)",
+    rows: [
+      { id: "revenue", label: "Revenue", key: "revenue" },
+      { id: "cogs", label: "Cost of goods sold", key: "cogs", neg: true },
+      { id: "grossProfit", label: "Gross profit", key: "grossProfit", kind: "total" },
+      { id: "opex", label: "Operating expenses", key: "opex", neg: true },
+      { id: "ebitda", label: "EBITDA", key: "ebitda", kind: "total" },
+      { id: "da", label: "Depreciation and amortisation", key: "da", neg: true },
+      { id: "ebit", label: "EBIT", key: "ebit", kind: "total" },
+      { id: "financeCosts", label: "Finance costs", key: "financeCosts", neg: true },
+      { id: "pbt", label: "Profit before tax", key: "pbt", kind: "total" },
+      { id: "tax", label: "Tax expense", key: "tax", neg: true },
+      { id: "netProfit", label: "Net profit", key: "netProfit", kind: "total" }
+    ] },
+  bs: { title: "Balance Sheet", short: "Balance Sheet",
+    caption: "Position at the end of each year, in $ thousands (fictional company)",
+    rows: [
+      { kind: "heading", label: "Assets" },
+      { id: "cash", label: "Cash", key: "cash" },
+      { id: "receivables", label: "Receivables", key: "receivables" },
+      { id: "inventory", label: "Inventory", key: "inventory" },
+      { id: "otherCurrentAssets", label: "Other current assets", key: "otherCurrentAssets" },
+      { id: "ppe", label: "Property and equipment", key: "ppe" },
+      { id: "totalAssets", label: "Total assets", key: "totalAssets", kind: "total" },
+      { kind: "heading", label: "Liabilities" },
+      { id: "payables", label: "Payables", key: "payables" },
+      { id: "borrowings", label: "Borrowings", key: "borrowings" },
+      { id: "otherLiabilities", label: "Other liabilities", key: "otherLiabilities" },
+      { id: "totalLiabilities", label: "Total liabilities", key: "totalLiabilities", kind: "total" },
+      { kind: "heading", label: "Equity" },
+      { id: "shareCapital", label: "Share capital", key: "shareCapital" },
+      { id: "retainedEarnings", label: "Retained earnings", key: "retainedEarnings" },
+      { id: "totalEquity", label: "Total equity", key: "totalEquity", kind: "total" },
+      { id: "totalLE", label: "Total liabilities and equity", key: "totalLE", kind: "total" }
+    ] },
+  cf: { title: "Cash Flow Statement", short: "Cash Flow",
+    caption: "Cash movements over each year, in $ thousands, indirect method (fictional company)",
+    rows: [
+      { id: "cfNetProfit", label: "Net profit", key: "netProfit" },
+      { id: "cfDa", label: "Add back: depreciation and amortisation", key: "da" },
+      { id: "workingCapital", label: "Change in working capital", key: "workingCapital" },
+      { id: "operating", label: "Operating cash flow", key: "operating", kind: "total" },
+      { id: "investing", label: "Investing cash flow", key: "investing", kind: "total" },
+      { id: "financing", label: "Financing cash flow", key: "financing", kind: "total" },
+      { id: "netChange", label: "Net change in cash", key: "netChange", kind: "total" },
+      { id: "opening", label: "Opening cash", key: "opening" },
+      { id: "closing", label: "Closing cash", key: "closing", kind: "total" }
+    ] }
+};
+
+const EXPLAIN = {
+  revenue: { title: "Revenue",
+    what: "Money earned from selling goods or services during the year, before any costs are deducted. Also called sales or turnover.",
+    formula: "Revenue = Units sold × Selling price",
+    example: S => `${lastYear(S)} revenue of ${k(lastOf(S,"pl").revenue)} could come from selling 780,000 units at $20 each.`,
+    why: "Everything else starts here. Growing revenue means the business is winning customers, but only profit and cash show whether that growth is worthwhile." },
+  cogs: { title: "Cost of goods sold (COGS)",
+    what: "The direct cost of producing what was sold: materials, factory labour and inbound freight. Costs of unsold stock stay on the balance sheet as inventory.",
+    formula: "COGS = Opening inventory + Purchases − Closing inventory",
+    example: S => `${lastYear(S)} COGS was ${k(lastOf(S,"pl").cogs)}, or ${formatPercent(ratioPercent(lastOf(S,"pl").cogs, lastOf(S,"pl").revenue))} of revenue.`,
+    why: "A small change in COGS as a share of revenue moves profit sharply. It reveals pricing power and production efficiency." },
+  grossProfit: { title: "Gross profit",
+    what: "What is left of revenue after paying the direct cost of the goods sold. It must cover all other costs and still leave a profit.",
+    formula: "Gross profit = Revenue − COGS",
+    example: S => { const p = lastOf(S,"pl"); return `${k(p.revenue)} − ${k(p.cogs)} = ${k(p.grossProfit)}, a gross margin of ${formatPercent(ratioPercent(p.grossProfit, p.revenue))}.`; },
+    why: "Gross margin shows how much each dollar of sales contributes towards overheads and profit." },
+  opex: { title: "Operating expenses",
+    what: "Everyday running costs that are not part of making the product: salaries, marketing, rent and administration. In this layout depreciation and interest are shown separately.",
+    formula: "Operating expenses % = Operating expenses ÷ Revenue",
+    example: S => { const p = lastOf(S,"pl"); return `${lastYear(S)} operating expenses of ${k(p.opex)} were ${formatPercent(ratioPercent(p.opex, p.revenue))} of revenue.`; },
+    why: "If operating expenses grow faster than revenue, margins shrink even when sales are rising." },
+  ebitda: { title: "EBITDA",
+    what: "Earnings before interest, tax, depreciation and amortisation. A measure of operating profit that ignores how the business is financed and how assets are depreciated.",
+    formula: "EBITDA = Gross profit − Operating expenses",
+    example: S => { const p = lastOf(S,"pl"); return `${k(p.grossProfit)} − ${k(p.opex)} = ${k(p.ebitda)}.`; },
+    why: "Analysts use it to compare operating performance across companies. It is not cash flow, because it ignores tax, interest and capital spending." },
+  da: { title: "Depreciation and amortisation (D&A)",
+    what: "The cost of long-lived assets spread over their useful lives. Depreciation applies to physical assets, amortisation to intangibles such as software. No cash leaves the business in the year it is charged.",
+    formula: "Straight-line depreciation = (Cost − Residual value) ÷ Useful life",
+    example: () => "A machine costing $5,000k with no residual value and a 10-year life is depreciated by $500k each year.",
+    why: "It matches the cost of an asset to the years it helps earn revenue. Because it is non-cash, it is added back in the cash flow statement." },
+  ebit: { title: "EBIT",
+    what: "Earnings before interest and tax: the profit from operations after charging for the wear on assets. Also called operating profit.",
+    formula: "EBIT = EBITDA − Depreciation and amortisation",
+    example: S => { const p = lastOf(S,"pl"); return `${k(p.ebitda)} − ${k(p.da)} = ${k(p.ebit)}.`; },
+    why: "It measures what the business earns from operating its assets, before the effect of debt levels or tax rates." },
+  financeCosts: { title: "Finance costs",
+    what: "Interest and charges paid to lenders for borrowed money.",
+    formula: "Finance costs ≈ Average borrowings × Interest rate",
+    example: S => { const b = lastOf(S,"bs"), pb = prevOf(S,"bs"), avg = (b.borrowings + pb.borrowings) / 2;
+      return `${k(lastOf(S,"pl").financeCosts)} on average borrowings of ${k(avg)} implies an interest rate of about ${formatPercent(ratioPercent(lastOf(S,"pl").financeCosts, avg))}.`; },
+    why: "Heavy debt makes profit fragile: interest must be paid whether or not the business has a good year." },
+  pbt: { title: "Profit before tax (PBT)",
+    what: "Profit after all operating costs and interest, but before the tax charge.",
+    formula: "PBT = EBIT − Finance costs",
+    example: S => { const p = lastOf(S,"pl"); return `${k(p.ebit)} − ${k(p.financeCosts)} = ${k(p.pbt)}.`; },
+    why: "It is the figure on which tax is calculated, and it lets you compare companies before differing tax rules." },
+  tax: { title: "Tax expense",
+    what: "Income tax charged on the year's profit. In this fictional example it is a flat rate on profit before tax, and it is paid in cash in the same year.",
+    formula: "Tax expense = PBT × Tax rate",
+    example: S => { const p = lastOf(S,"pl"); return `${k(p.pbt)} × ${formatPercent(ratioPercent(p.tax, p.pbt), 0)} = ${k(p.tax)}.`; },
+    why: "Tax is a real cost that reduces what shareholders keep. The effective rate (tax ÷ PBT) is a useful check on reasonableness." },
+  netProfit: { title: "Net profit",
+    what: "The final profit belonging to shareholders after every cost, interest and tax. Also called the bottom line or earnings.",
+    formula: "Net profit = PBT − Tax expense",
+    example: S => { const p = lastOf(S,"pl"); return `${k(p.pbt)} − ${k(p.tax)} = ${k(p.netProfit)}, a net margin of ${formatPercent(ratioPercent(p.netProfit, p.revenue))}.`; },
+    why: "Net profit flows into retained earnings on the balance sheet and is the starting point of the cash flow statement. That is the link between the three statements." },
+
+  cash: { title: "Cash",
+    what: "Money in bank accounts and on hand, available to spend immediately.",
+    formula: "Closing cash = Opening cash + Net change in cash",
+    example: S => { const c = lastOf(S,"cf"); return `${lastYear(S)}: ${k(c.opening)} + ${k(c.netChange)} = ${k(c.closing)}, which must match the balance sheet.`; },
+    why: "Profitable companies still fail if they run out of cash to pay wages, suppliers and lenders." },
+  receivables: { title: "Receivables",
+    what: "Money customers owe for goods or services already delivered on credit.",
+    formula: "Receivable days = Receivables ÷ Revenue × 365",
+    example: S => { const b = lastOf(S,"bs"), p = lastOf(S,"pl"); return `${k(b.receivables)} ÷ ${k(p.revenue)} × 365 = ${formatDays(ratioDays(b.receivables, p.revenue))} to collect payment.`; },
+    why: "Revenue is recorded when earned, but cash arrives later. Rising receivables can mean customers are paying more slowly and cash is tied up." },
+  inventory: { title: "Inventory",
+    what: "Goods held for sale, plus raw materials and unfinished goods, valued at cost.",
+    formula: "Inventory days = Inventory ÷ COGS × 365",
+    example: S => { const b = lastOf(S,"bs"), p = lastOf(S,"pl"); return `${k(b.inventory)} ÷ ${k(p.cogs)} × 365 = ${formatDays(ratioDays(b.inventory, p.cogs))} of stock on hand.`; },
+    why: "Stock ties up cash and can become obsolete. Too little causes lost sales, too much wastes money." },
+  otherCurrentAssets: { title: "Other current assets",
+    what: "Short-term assets that are not cash, receivables or inventory, such as prepaid insurance, deposits and tax refunds due within a year.",
+    formula: null,
+    example: S => `Paying a $120k annual insurance premium in advance leaves a prepaid asset that shrinks as the year passes. ${lastYear(S)} balance: ${k(lastOf(S,"bs").otherCurrentAssets)}.`,
+    why: "These items are usually small, but an unexplained rise can be a warning sign, so it is worth asking what they contain." },
+  ppe: { title: "Property and equipment",
+    what: "Long-lived physical assets such as buildings, machinery and vehicles, shown at cost less accumulated depreciation.",
+    formula: "Closing PPE = Opening PPE + Capital spending − Depreciation",
+    example: S => { const b = lastOf(S,"bs"), pb = prevOf(S,"bs"), c = lastOf(S,"cf"); return `${k(pb.ppe)} + ${k(-c.investing)} − ${k(lastOf(S,"pl").da)} = ${k(b.ppe)}.`; },
+    why: "It shows how much the business has invested to produce its goods, and how much it must keep spending to maintain them." },
+  totalAssets: { title: "Total assets",
+    what: "Everything the company owns or controls that has value, added together.",
+    formula: "Total assets = Cash + Receivables + Inventory + Other current assets + Property and equipment",
+    example: S => { const b = lastOf(S,"bs"); return `${lastYear(S)}: ${k(b.cash)} + ${k(b.receivables)} + ${k(b.inventory)} + ${k(b.otherCurrentAssets)} + ${k(b.ppe)} = ${k(b.totalAssets)}.`; },
+    why: "It sets the scale of the business and is the base for measures such as return on assets." },
+  payables: { title: "Payables",
+    what: "Money the company owes suppliers for goods and services already received.",
+    formula: "Payable days = Payables ÷ COGS × 365",
+    example: S => { const b = lastOf(S,"bs"), p = lastOf(S,"pl"); return `${k(b.payables)} ÷ ${k(p.cogs)} × 365 = ${formatDays(ratioDays(b.payables, p.cogs))} to pay suppliers.`; },
+    why: "Supplier credit is a free source of cash, but paying too slowly can damage relationships." },
+  borrowings: { title: "Borrowings",
+    what: "Money borrowed from banks or bondholders that must be repaid with interest.",
+    formula: "Debt-to-equity = Borrowings ÷ Total equity",
+    example: S => { const b = lastOf(S,"bs"); return `${k(b.borrowings)} ÷ ${k(b.totalEquity)} = ${(b.borrowings / b.totalEquity).toFixed(2)} times.`; },
+    why: "Debt can boost returns, but fixed repayments raise risk when profits fall." },
+  otherLiabilities: { title: "Other liabilities",
+    what: "Other obligations such as accrued expenses, tax owed, customer deposits and provisions.",
+    formula: null,
+    example: S => `Wages earned in December but paid in January are an accrued liability. ${lastYear(S)} balance: ${k(lastOf(S,"bs").otherLiabilities)}.`,
+    why: "These are real obligations that will use cash in the future, even if they are not loans." },
+  totalLiabilities: { title: "Total liabilities",
+    what: "Everything the company owes to others, added together.",
+    formula: "Total liabilities = Payables + Borrowings + Other liabilities",
+    example: S => { const b = lastOf(S,"bs"); return `${k(b.payables)} + ${k(b.borrowings)} + ${k(b.otherLiabilities)} = ${k(b.totalLiabilities)}.`; },
+    why: "Comparing liabilities with assets shows how much of the business is funded by other people's money." },
+  shareCapital: { title: "Share capital",
+    what: "The money shareholders paid into the company when it issued shares.",
+    formula: null,
+    example: S => `Shareholders invested ${k(lastOf(S,"bs").shareCapital)} in total. It is unchanged here because no new shares were issued.`,
+    why: "It is the owners' own money at risk in the business. Issuing new shares raises cash but dilutes existing owners." },
+  retainedEarnings: { title: "Retained earnings",
+    what: "Profits earned over time that the company has kept rather than paid out as dividends.",
+    formula: "Closing retained earnings = Opening retained earnings + Net profit − Dividends",
+    example: S => { const b = lastOf(S,"bs"), pb = prevOf(S,"bs"); return `${k(pb.retainedEarnings)} + ${k(lastOf(S,"pl").netProfit)} − $0k dividends = ${k(b.retainedEarnings)}.`; },
+    why: "It is where the P&L joins the balance sheet. Net profit only increases equity through this line." },
+  totalEquity: { title: "Total equity",
+    what: "The owners' stake: what would be left if all assets were sold and all liabilities paid. Also called net assets.",
+    formula: "Total equity = Share capital + Retained earnings (= Total assets − Total liabilities)",
+    example: S => { const b = lastOf(S,"bs"); return `${k(b.shareCapital)} + ${k(b.retainedEarnings)} = ${k(b.totalEquity)}.`; },
+    why: "Growing equity from retained profit is a sign of a business building value for its owners." },
+  totalLE: { title: "Total liabilities and equity",
+    what: "Where the money to fund the assets came from: lenders and suppliers (liabilities) plus owners (equity). It must equal total assets.",
+    formula: "Assets = Liabilities + Equity",
+    example: S => { const b = lastOf(S,"bs"); return `${lastYear(S)}: ${k(b.totalAssets)} = ${k(b.totalLiabilities)} + ${k(b.totalEquity)}.`; },
+    why: "This is the accounting equation. If it does not hold, the statements contain an error, and this app shows a validation error if so." },
+
+  cfNetProfit: { title: "Net profit (cash flow starting point)",
+    what: "The indirect method begins with net profit from the P&L, then adjusts for items that did not involve cash.",
+    formula: "Operating cash flow starts from: Net profit",
+    example: S => `${lastYear(S)} net profit of ${k(lastOf(S,"cf").netProfit)} is the same figure shown on the P&L.`,
+    why: "It links the P&L to the cash flow statement." },
+  cfDa: { title: "Add back: depreciation and amortisation",
+    what: "D&A reduced profit but no cash left the business, so it is added back.",
+    formula: "Add back = Depreciation and amortisation from the P&L",
+    example: S => `${lastYear(S)}: ${k(lastOf(S,"cf").da)} was charged against profit but not paid out.`,
+    why: "Without this adjustment, cash would be understated by every non-cash charge." },
+  workingCapital: { title: "Change in working capital",
+    what: "Cash tied up in, or released by, receivables, inventory, other current assets, payables and other liabilities. Money owed to you rising is a cash use; money you owe rising is a cash source.",
+    formula: "= −(Increase in receivables + inventory + other current assets) + (Increase in payables + other liabilities)",
+    example: S => { const c = lastOf(S,"cf"); return `${lastYear(S)}: working capital absorbed ${k(-c.workingCapital)} of cash (shown as ${formatNumber(c.workingCapital)}).`; },
+    why: "A growing business often needs more working capital, which is why profit and cash differ." },
+  operating: { title: "Operating cash flow",
+    what: "Cash generated by the core business after tax and interest, before spending on assets or raising funds.",
+    formula: "Operating cash flow = Net profit + D&A ± Change in working capital",
+    example: S => { const c = lastOf(S,"cf"); return `${k(c.netProfit)} + ${k(c.da)} + (${formatNumber(c.workingCapital)}) = ${k(c.operating)}, against net profit of ${k(c.netProfit)}.`; },
+    why: "A healthy business turns profit into cash over time. Operating cash flow persistently below net profit deserves questions." },
+  investing: { title: "Investing cash flow",
+    what: "Cash spent on, or received from, long-term assets. Here it is capital spending on property and equipment, shown negative as cash goes out.",
+    formula: "Investing cash flow = −(Closing PPE − Opening PPE + Depreciation)",
+    example: S => { const b = lastOf(S,"bs"), pb = prevOf(S,"bs"); return `−(${k(b.ppe)} − ${k(pb.ppe)} + ${k(lastOf(S,"pl").da)}) = ${k(lastOf(S,"cf").investing)}.`; },
+    why: "It shows whether the company is investing for growth. Negative investing cash flow is usually a good sign for a growing company." },
+  financing: { title: "Financing cash flow",
+    what: "Cash exchanged with lenders and shareholders: new loans, repayments, share issues and dividends.",
+    formula: "Financing cash flow = Change in borrowings + Change in share capital − Dividends",
+    example: S => { const b = lastOf(S,"bs"), pb = prevOf(S,"bs"); return `Borrowings moved from ${k(pb.borrowings)} to ${k(b.borrowings)}, so financing cash flow is ${k(lastOf(S,"cf").financing)}.`; },
+    why: "It shows how the company funds itself, and whether it is borrowing to survive or repaying from its own cash." },
+  netChange: { title: "Net change in cash",
+    what: "The total of the three cash flows. It is how much the cash balance rose or fell during the year.",
+    formula: "Net change = Operating + Investing + Financing",
+    example: S => { const c = lastOf(S,"cf"); return `${k(c.operating)} + (${formatNumber(c.investing)}) + (${formatNumber(c.financing)}) = ${k(c.netChange)}.`; },
+    why: "It bridges opening and closing cash." },
+  opening: { title: "Opening cash",
+    what: "The cash balance at the start of the year, which equals the previous year's closing cash.",
+    formula: "Opening cash = Previous year's closing cash",
+    example: S => `${lastYear(S)} opens with ${k(lastOf(S,"cf").opening)}, last year's closing balance.`,
+    why: "It ensures each year starts where the last ended, so no cash appears or disappears between years." },
+  closing: { title: "Closing cash",
+    what: "Cash at the end of the year. It must match cash on the balance sheet.",
+    formula: "Closing cash = Opening cash + Net change in cash",
+    example: S => { const c = lastOf(S,"cf"); return `${k(c.opening)} + ${k(c.netChange)} = ${k(c.closing)}, matching balance sheet cash of ${k(lastOf(S,"bs").cash)}.`; },
+    why: "This is where the cash flow statement and balance sheet are tied together. A mismatch means an error somewhere." }
+};
+
+// Quiz questions are built from the live statements so answers always match the tables.
+function buildQuiz(S) {
+  const b = lastOf(S,"bs"), p = lastOf(S,"pl"), c = lastOf(S,"cf");
+  return [
+    { q: "Which statement shows what a company owns and owes on one particular date?",
+      options: ["Profit and Loss Statement", "Balance Sheet", "Cash Flow Statement"], answer: 1,
+      why: "The balance sheet is a snapshot at a point in time. The P&L and cash flow statement cover a period." },
+    { q: `${lastYear(S)} total assets are ${k(b.totalAssets)} and total liabilities are ${k(b.totalLiabilities)}. What is total equity?`,
+      options: [k(b.totalLiabilities + b.totalAssets), k(b.totalAssets - b.totalLiabilities), k(b.totalAssets)], answer: 1,
+      why: `Assets = Liabilities + Equity, so equity = ${k(b.totalAssets)} − ${k(b.totalLiabilities)} = ${k(b.totalEquity)}.` },
+    { q: "Net profit rose in every year, but cash grew by less than profit. What is a likely reason?",
+      options: ["Depreciation was deducted twice", "Receivables and inventory grew, tying up cash", "Revenue was recorded as a liability"], answer: 1,
+      why: `Profit is recorded when earned, not when cash arrives. In ${lastYear(S)}, working capital absorbed ${k(-c.workingCapital)}.` },
+    { q: "What is the difference between EBITDA and EBIT?",
+      options: ["Tax", "Depreciation and amortisation", "Finance costs"], answer: 1,
+      why: `EBIT = EBITDA − D&A. In ${lastYear(S)}: ${k(p.ebitda)} − ${k(p.da)} = ${k(p.ebit)}.` }
+  ];
+}
+
+</script>
+  <script>
+/* app.js — the interface. It reads data and calculations from the other files and draws the page. */
+(function () {
+  const SECTIONS = ["home", "learn", "connect", "analyse", "practise"];
+  const $ = id => document.getElementById(id);
+
+  // ----- App state -----
+  let simulateError = false;   // when true, a deliberately wrong copy of the data is used (to test validation)
+  let S, checks;               // calculated statements and validation results
+  const state = { stmt: "pl", item: null, quiz: { i: 0, score: 0, picked: null, done: false } };
+
+  function rebuild() {
+    let data = DATA;
+    if (simulateError) {            // copy the data, then add 100 to FY2024 cash. The original is untouched.
+      data = JSON.parse(JSON.stringify(DATA));
+      data.bs.cash[data.bs.cash.length - 1] += 100;
+    }
+    S = buildStatements(data);
+    checks = validateStatements(S, data);
+  }
+
+  // ----- Shared pieces -----
+  function bannerHtml() {
+    const failed = checks.filter(c => !c.ok);
+    if (!failed.length) {
+      return `<div class="banner ok" role="status"><strong>All ${checks.length} accounting checks passed.</strong> The balance sheet balances and cash reconciles in every year. <a href="#connect">See the checks</a></div>`;
+    }
+    return `<div class="banner bad" role="alert"><strong>Validation error: ${failed.length} of ${checks.length} checks failed.</strong>
+      <ul>${failed.map(c => `<li>${c.year}: ${c.name}. ${c.detail}</li>`).join("")}</ul>
+      The figures are shown exactly as supplied and have not been adjusted.</div>`;
+  }
+
+  // ----- Learn -----
+  function renderLearn() {
+    $("learn-tabs").innerHTML = Object.keys(STATEMENTS).map(key =>
+      `<a href="#learn/${key}" class="tab" ${key === state.stmt ? 'aria-current="page"' : ""}>${STATEMENTS[key].short}</a>`).join("");
+    $("learn-banner").innerHTML = bannerHtml();
+    $("learn-table").innerHTML = tableHtml(state.stmt);
+    showExplanation(state.item);
+  }
+
+  function tableHtml(key) {
+    const st = STATEMENTS[key];
+    let h = `<table class="fin"><caption>${st.title}<span>${st.caption}. ${DATA.periodNote}. Select a line item to learn about it.</span></caption>
+      <thead><tr><th scope="col">Line item</th>${S.years.map(y => `<th scope="col" class="num">${y}</th>`).join("")}</tr></thead><tbody>`;
+    st.rows.forEach(r => {
+      if (r.kind === "heading") { h += `<tr class="group"><th scope="colgroup" colspan="${S.years.length + 1}">${r.label}</th></tr>`; return; }
+      const pressed = r.id === state.item;
+      h += `<tr class="${r.kind === "total" ? "total" : ""}"><th scope="row"><button type="button" class="item" data-id="${r.id}" aria-pressed="${pressed}">${r.label}</button></th>`;
+      S[key].forEach(year => { const v = r.neg ? -year[r.key] : year[r.key]; h += `<td class="num${v < 0 ? " negative" : ""}">${formatNumber(v)}</td>`; });
+      h += "</tr>";
+    });
+    return h + "</tbody></table>";
+  }
+
+  function showExplanation(id) {
+    const panel = $("explain");
+    const e = id && EXPLAIN[id];
+    if (!e) { panel.innerHTML = `<h2>Line item explanation</h2><p>Select any line item in the table to see what it means, how it is calculated, an example from this company and why it matters.</p>`; return; }
+    panel.innerHTML = `<h2>${e.title}</h2><p>${e.what}</p>
+      ${e.formula ? `<p class="formula"><b>Formula</b>${e.formula}</p>` : ""}
+      <h3>Example</h3><p>${e.example(S)}</p><h3>Why it matters</h3><p>${e.why}</p>
+      <p class="muted">Fictional figures, $ thousands.</p>`;
+  }
+
+  // ----- Connect -----
+  function renderConnect() {
+    const p = lastOf(S, "pl"), b = lastOf(S, "bs"), c = lastOf(S, "cf"), y = lastYear(S);
+    const links = [
+      ["P&L to Balance Sheet", `${y} net profit of ${k(p.netProfit)} is added to retained earnings, taking it to ${k(b.retainedEarnings)}.`],
+      ["P&L to Cash Flow", `Net profit of ${k(c.netProfit)} is the starting point of operating cash flow, with ${k(c.da)} of depreciation added back.`],
+      ["Balance Sheet to Cash Flow", `Changes in receivables, inventory, payables, property and borrowings explain the working capital, investing and financing cash flows.`],
+      ["Cash Flow to Balance Sheet", `Closing cash of ${k(c.closing)} should equal balance sheet cash of ${k(b.cash)}.`]
+    ];
+    const rows = checks.map(ch => `<tr><td>${ch.year}</td><td>${ch.name}</td>
+      <td class="${ch.ok ? "pass" : "fail"}">${ch.ok ? "Pass" : "Fail"}</td><td>${ch.detail}</td></tr>`).join("");
+    $("connect-body").innerHTML = `
+      <p class="lead">The three statements are one story told three ways. Each link below uses the latest year of the fictional data.</p>
+      <div class="links">${links.map(l => `<div class="link-card"><h2>${l[0]}</h2><p>${l[1]}</p></div>`).join("")}</div>
+      <h2>Accounting checks</h2>${bannerHtml()}
+      <div class="table-wrap"><table class="fin checks"><caption>Validation results<span>Every check is recalculated from the data each time the page loads.</span></caption>
+        <thead><tr><th scope="col">Year</th><th scope="col">Check</th><th scope="col">Result</th><th scope="col">Working</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <h2>Assumptions behind the cash flow</h2><ul>${DATA.assumptions.map(a => `<li>${a}</li>`).join("")}</ul>
+      <h2>Test the validation</h2>
+      <p>This button adds $100k to FY2024 cash in a temporary copy of the data. The checks should fail and report it. The statements are not forced to balance.</p>
+      <button type="button" class="btn" id="toggle-error" aria-pressed="${simulateError}">${simulateError ? "Restore the original data" : "Introduce a deliberate error"}</button>`;
+  }
+
+  // ----- Analyse -----
+  function renderAnalyse() {
+    const rows = [
+      ["Gross margin", "Gross profit ÷ Revenue", (p) => formatPercent(ratioPercent(p.grossProfit, p.revenue))],
+      ["EBITDA margin", "EBITDA ÷ Revenue", (p) => formatPercent(ratioPercent(p.ebitda, p.revenue))],
+      ["Net margin", "Net profit ÷ Revenue", (p) => formatPercent(ratioPercent(p.netProfit, p.revenue))],
+      ["Return on equity", "Net profit ÷ Closing equity", (p, b) => formatPercent(ratioPercent(p.netProfit, b.totalEquity))],
+      ["Debt-to-equity", "Borrowings ÷ Total equity", (p, b) => (b.borrowings / b.totalEquity).toFixed(2) + "x"],
+      ["Receivable days", "Receivables ÷ Revenue × 365", (p, b) => formatDays(ratioDays(b.receivables, p.revenue))],
+      ["Inventory days", "Inventory ÷ COGS × 365", (p, b) => formatDays(ratioDays(b.inventory, p.cogs))],
+      ["Cash conversion", "Operating cash flow ÷ Net profit", (p, b, c) => formatPercent(ratioPercent(c.operating, p.netProfit), 0)]
+    ];
+    $("analyse-body").innerHTML = `<p class="lead">Ratios turn the statements into comparisons you can track over time. Trends matter more than any single number.</p>
+      <div class="table-wrap"><table class="fin"><caption>Key ratios<span>Calculated from the fictional statements. Ratios are not in $.</span></caption>
+      <thead><tr><th scope="col">Ratio</th><th scope="col">Formula</th>${S.years.map(y => `<th scope="col" class="num">${y}</th>`).join("")}</tr></thead><tbody>
+      ${rows.map(r => `<tr><th scope="row">${r[0]}</th><td>${r[1]}</td>${S.years.map((y, i) => `<td class="num">${r[2](S.pl[i], S.bs[i], S.cf[i])}</td>`).join("")}</tr>`).join("")}
+      </tbody></table></div>
+      <h2>What to notice</h2><ul>
+        <li>Margins are stable or improving while revenue grows, which suggests growth is not being bought with discounts.</li>
+        <li>Receivable and inventory days are broadly steady, so working capital grows in line with sales.</li>
+        <li>Operating cash flow is above net profit because depreciation is added back, but growth in working capital absorbs some of it.</li>
+        <li>Debt-to-equity falls because borrowings are repaid while equity builds from retained profit.</li></ul>`;
+  }
+
+  // ----- Practise (knowledge check) -----
+  function renderPractise() {
+    const quiz = buildQuiz(S), q = state.quiz, el = $("practise-body");
+    if (q.done) {
+      el.innerHTML = `<p class="lead">You scored <strong>${q.score} out of ${quiz.length}</strong>.</p><button type="button" class="btn" data-act="restart">Try again</button>`;
+      return;
+    }
+    const item = quiz[q.i], answered = q.picked !== null;
+    el.innerHTML = `<p class="muted">Question ${q.i + 1} of ${quiz.length}</p>
+      <fieldset><legend>${item.q}</legend>
+      ${item.options.map((o, n) => `<label class="opt ${answered ? (n === item.answer ? "right" : n === q.picked ? "wrong" : "") : ""}">
+        <input type="radio" name="opt" value="${n}" ${answered ? "disabled" : ""} ${q.picked === n ? "checked" : ""}> <span>${o}</span></label>`).join("")}
+      </fieldset>
+      ${answered ? `<p class="feedback ${q.picked === item.answer ? "pass" : "fail"}" role="status"><strong>${q.picked === item.answer ? "Correct." : "Not quite."}</strong> ${item.why}</p>
+        <button type="button" class="btn" data-act="next">${q.i + 1 < quiz.length ? "Next question" : "See your score"}</button>`
+      : `<button type="button" class="btn" data-act="check">Check answer</button><p id="quiz-msg" class="muted" role="status"></p>`}`;
+  }
+
+  function handlePractiseClick(e) {
+    const act = e.target.dataset && e.target.dataset.act, q = state.quiz, quiz = buildQuiz(S);
+    if (act === "check") {
+      const chosen = document.querySelector('input[name="opt"]:checked');
+      if (!chosen) { $("quiz-msg").textContent = "Choose an answer first."; return; }
+      q.picked = Number(chosen.value);
+      if (q.picked === quiz[q.i].answer) q.score++;
+    } else if (act === "next") {
+      q.picked = null; q.i++; if (q.i >= quiz.length) q.done = true;
+    } else if (act === "restart") {
+      state.quiz = { i: 0, score: 0, picked: null, done: false };
+    } else return;
+    renderPractise();
+    const focusEl = document.querySelector("#practise-body .feedback, #practise-body legend, #practise-body .lead");
+    if (focusEl) { focusEl.setAttribute("tabindex", "-1"); focusEl.focus(); }
+  }
+
+  // ----- Routing: the URL hash (#learn/bs) decides what is shown -----
+  function route() {
+    const [name, arg] = location.hash.replace("#", "").split("/");
+    const section = SECTIONS.includes(name) ? name : "home";
+    SECTIONS.forEach(s => { $(s).hidden = s !== section; });
+    document.querySelectorAll("[data-nav]").forEach(a => {
+      if (a.dataset.nav === section) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current");
+    });
+    if (section === "learn") { if (STATEMENTS[arg] && arg !== state.stmt) { state.stmt = arg; state.item = null; } renderLearn(); }
+    if (section === "connect") renderConnect();
+    if (section === "analyse") renderAnalyse();
+    if (section === "practise") renderPractise();
+    const heading = $(section).querySelector("h1");
+    document.title = (section === "home" ? "" : heading.textContent + " | ") + "Financial Statements Lab";
+    window.scrollTo(0, 0);
+    heading.focus({ preventScroll: true });
+  }
+
+  // ----- Events -----
+  document.addEventListener("click", e => {
+    const itemBtn = e.target.closest("button.item");
+    if (itemBtn) {
+      state.item = itemBtn.dataset.id;
+      document.querySelectorAll("button.item").forEach(b => b.setAttribute("aria-pressed", b === itemBtn));
+      showExplanation(state.item);
+      if (window.matchMedia("(max-width: 860px)").matches) $("explain").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    }
+    if (e.target.id === "toggle-error") { simulateError = !simulateError; rebuild(); renderConnect(); $("toggle-error").focus(); }
+  });
+  $("practise-body").addEventListener("click", handlePractiseClick);
+  window.addEventListener("hashchange", route);
+
+  rebuild();
+  route();
+})();
+
+</script>
+</body>
+</html>
